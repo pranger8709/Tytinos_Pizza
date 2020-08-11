@@ -1,1 +1,2 @@
-#Hello Justin I hope you find this
+from Coupon import *
+from Person import * #Added standard users for Justin, April and Tyler
