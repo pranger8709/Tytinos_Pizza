@@ -32,20 +32,20 @@ class ReferFriendCoupon(Strategy):
         return order_total - (order_total * 0.25)
 
 
-if __name__ == '__main__':
-    total_price = 17.49
-
-    # New User Coupon
-    coupon = NewUserCoupon()
-    cost = Coupon(coupon, total_price)
-    print("New User Coupon Total: {}".format(cost.apply_discount()))
-
-    # Weekly Special Coupon
-    coupon = WeeklySpecialCoupon()
-    cost = Coupon(coupon, total_price)
-    print("Weekly Special Coupon Total: {}".format(cost.apply_discount()))
-
-    # Refer a Friend Coupon
-    coupon = ReferFriendCoupon()
-    cost = Coupon(coupon, total_price)
-    print("Refer a Friend Coupon Total: {}".format(cost.apply_discount()))
+# if __name__ == '__main__':
+#     total_price = 17.49
+#
+#     # New User Coupon
+#     coupon = NewUserCoupon()
+#     cost = Coupon(coupon, total_price)
+#     print("New User Coupon Total: {}".format(cost.apply_discount()))
+#
+#     # Weekly Special Coupon
+#     coupon = WeeklySpecialCoupon()
+#     cost = Coupon(coupon, total_price)
+#     print("Weekly Special Coupon Total: {}".format(cost.apply_discount()))
+#
+#     # Refer a Friend Coupon
+#     coupon = ReferFriendCoupon()
+#     cost = Coupon(coupon, total_price)
+#     print("Refer a Friend Coupon Total: {}".format(cost.apply_discount()))
