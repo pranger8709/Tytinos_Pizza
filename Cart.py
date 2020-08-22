@@ -146,4 +146,4 @@ if __name__ == '__main__':
         5.99
     )
     cart.print_cart(justin)
-    
+    cart.teardown()

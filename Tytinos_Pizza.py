@@ -2,6 +2,7 @@ from Coupon import *
 from Person import * #Added standard users for Justin, April and Tyler
 from Menu import *
 from Cart import *
+from Delivery import *
 
 
 def main():
@@ -46,7 +47,8 @@ def main():
     dessert.Remove_Item("Sticks")
     dessert.Print_Dessert_Menu()
     
-    cart = Cart()
+    # Justin Cart
+    justin_cart = Cart()
     menu = [Pizza(), Side(), Dessert()]
 
     print("\n\n")
@@ -54,48 +56,61 @@ def main():
     customer.Print_Person()
     justin = customer.session.query(Person).filter(Person.id == 1)[0]
 
-    cart.print_cart(justin)
+    justin_cart.print_cart(justin)
     # Adding 1 Cheese Pizza Small to Justin's cart
-    cart.add_item_to_cart(
+    justin_cart.add_item_to_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
         justin,
         "Small", 
         1
     )
-    cart.print_cart(justin)
+    justin_cart.print_cart(justin)
     # Adding 2 Meat Lover's Pizzas Large to Justin's cart
-    cart.print_price_without_tax()
-    cart.add_item_to_cart(
+    justin_cart.print_price_without_tax()
+    justin_cart.add_item_to_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], 
         justin,
         "Large", 
         2
     )
-    cart.print_cart(justin)
+    justin_cart.print_cart(justin)
     # Removing an item that doesn't exist
-    cart.remove_item_from_cart(
+    justin_cart.remove_item_from_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
         justin,
         "Veggie",
         5.99
     )
-    cart.print_cart(justin)
+    justin_cart.print_cart(justin)
     # Removing an item that does exist
-    cart.remove_item_from_cart(
+    justin_cart.remove_item_from_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
         justin,
         "Cheese",
         5.99
     )
-    cart.print_cart(justin)
+    justin_cart.print_cart(justin)
     # Removing an item that does exist but the price does not match the item (Does not remove item)
-    cart.remove_item_from_cart(
+    justin_cart.remove_item_from_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
         justin,
         "Meat Lovers",
         5.99
     )
-    cart.print_cart(justin)
+    justin_cart.print_cart(justin)
+    d = Delivery()
+    d.add_standard_delivery_types()
+    print(d.does_delivery_type_exist("Delivery", 3.99))
+    print(d.does_delivery_type_exist("Pick up", 0.00))
+    print(d.does_delivery_type_exist("Door Dash", 3.99))
+    d.print_delivery_types()
+    d.remove_delivery_type("Door Dash", 3.99)
+    d.print_delivery_types()
+    selected_delivery_type = d.get_delivery_price_from_deliver_type_name("Delivery")
+    print(selected_delivery_type)
+    justin_cart.add_item_price_to_total_price(selected_delivery_type)
+    justin_cart.print_cart(justin)
+
     
     
 main()
