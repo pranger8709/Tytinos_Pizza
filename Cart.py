@@ -36,29 +36,28 @@ class Cart(Base):
         self.session.add(Coupon(type=coupon_type, discount=coupon_discount))
         self.session.commit()
 
-    def add_item_to_cart(self, item_object, person_object, item_size, item_amount):
+    def add_item_to_cart(self, item_object, person_object, item_size, item_quantity):
         if(item_size == "Small"):
-            self.session.add(Cart(item=item_object.name, price=item_object.priceOne, person_id=person_object.id, quantity=item_amount))
-            self.session.commit()
-            self.calculate_total_price(person_object)
+            for i in range(item_quantity):
+                self.session.add(Cart(item=item_object.name, price=item_object.priceOne, person_id=person_object.id, quantity=item_quantity))
+                self.session.commit()
+                self.add_item_price_to_total_price(item_object.priceOne)
         elif(item_size == "Medium"):
-            self.session.add(Cart(item=item_object.name, price=item_object.priceTwo, person_id=person_object.id, quantity=item_amount))
-            self.session.commit()
-            self.calculate_total_price(person_object)
+            for i in range(item_quantity):
+                self.session.add(Cart(item=item_object.name, price=item_object.priceTwo, person_id=person_object.id, quantity=item_quantity))
+                self.session.commit()
+                self.add_item_price_to_total_price(item_object.priceTwo)
         elif(item_size == "Large"):
-            self.session.add(Cart(item=item_object.name, price=item_object.priceThree, person_id=person_object.id, quantity=item_amount))
-            self.session.commit()
-            self.calculate_total_price(person_object)
+            for i in range(item_quantity):
+                self.session.add(Cart(item=item_object.name, price=item_object.priceThree, person_id=person_object.id, quantity=item_quantity))
+                self.session.commit()
+                self.add_item_price_to_total_price(item_object.priceThree)
 
     def remove_item_from_cart(self, item_id):
         print("Remove item from cart")
 
-    def get_item_count(self):
-        return len(self._item)
-
-    def calculate_total_price(self, person_object):
-        for i in self.session.query(Cart).filter(Cart.person_id == person_object.id).order_by(Cart.id):
-            self.total_price = i.price + self.total_price
+    def add_item_price_to_total_price(self, item_price):
+        self.total_price = self.total_price + item_price
 
     def calculate_total_tax_price(self):
         self.total_tax = self.total_price * self._avg_state_sales_tax
@@ -85,23 +84,14 @@ class Checkout(Cart):
 
 
 if __name__ == '__main__':
-    # Cart Object
     cart = Cart()
-    # Menu objects
     menu = [Pizza(), Side(), Dessert()]
 
-    # for obj in menu:
-    #     for item in obj.session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id):
-    #         print(item.name)
-        # obj.Print_Menu()
-
     print("\n\n")
-    # print(menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0].name)
-    # print(menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0].priceOne)
     customer = Customer()
     customer.Print_Person()
     justin = customer.session.query(Person).filter(Person.id == 1)[0]
-    # print(customer.session.query(Person).filter(Person.id == 1)[0])
+
     cart.print_cart(justin)
     cart.add_item_to_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
@@ -115,10 +105,8 @@ if __name__ == '__main__':
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], 
         justin,
         "Large", 
-        1
+        2
     )
-    # cart.add_item_to_cart(menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], "Large")
     cart.print_cart(justin)
     print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
-    # print(cart.get_item_count())
     

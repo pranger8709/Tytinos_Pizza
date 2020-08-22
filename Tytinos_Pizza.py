@@ -67,10 +67,8 @@ def main():
         "Large", 
         1
     )
-    # cart.add_item_to_cart(menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], "Large")
     cart.print_cart(justin)
     print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
-    # print(cart.get_item_count())
     
     
 main()
