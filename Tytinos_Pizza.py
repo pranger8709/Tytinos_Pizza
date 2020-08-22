@@ -48,11 +48,14 @@ def main():
     
     cart = Cart()
     menu = [Pizza(), Side(), Dessert()]
-    justin = customer.session.query(Person).filter(Person.id == 1)[0]
+
     print("\n\n")
     customer = Customer()
     customer.Print_Person()
+    justin = customer.session.query(Person).filter(Person.id == 1)[0]
+
     cart.print_cart(justin)
+    # Adding 1 Cheese Pizza Small to Justin's cart
     cart.add_item_to_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
         justin,
@@ -60,16 +63,39 @@ def main():
         1
     )
     cart.print_cart(justin)
+    # Adding 2 Meat Lover's Pizzas Large to Justin's cart
     cart.print_price_without_tax()
     cart.add_item_to_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], 
         justin,
         "Large", 
-        1
+        2
     )
     cart.print_cart(justin)
-    cart.print_price_without_tax()
-    cart.print_price_with_tax()
+    # Removing an item that doesn't exist
+    cart.remove_item_from_cart(
+        menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
+        justin,
+        "Veggie",
+        5.99
+    )
+    cart.print_cart(justin)
+    # Removing an item that does exist
+    cart.remove_item_from_cart(
+        menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
+        justin,
+        "Cheese",
+        5.99
+    )
+    cart.print_cart(justin)
+    # Removing an item that does exist but the price does not match the item (Does not remove item)
+    cart.remove_item_from_cart(
+        menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
+        justin,
+        "Meat Lovers",
+        5.99
+    )
+    cart.print_cart(justin)
     
     
 main()
