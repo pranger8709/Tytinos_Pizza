@@ -1,6 +1,7 @@
 from Coupon import *
 from Person import * #Added standard users for Justin, April and Tyler
 from Menu import *
+from Cart import *
 
 
 def main():
@@ -45,6 +46,31 @@ def main():
     dessert.Remove_Item("Sticks")
     dessert.Print_Dessert_Menu()
     
+    cart = Cart()
+    menu = [Pizza(), Side(), Dessert()]
+    justin = customer.session.query(Person).filter(Person.id == 1)[0]
+    print("\n\n")
+    customer = Customer()
+    customer.Print_Person()
+    cart.print_cart(justin)
+    cart.add_item_to_cart(
+        menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[0], 
+        justin,
+        "Small", 
+        1
+    )
+    cart.print_cart(justin)
+    print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
+    cart.add_item_to_cart(
+        menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], 
+        justin,
+        "Large", 
+        1
+    )
+    # cart.add_item_to_cart(menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], "Large")
+    cart.print_cart(justin)
+    print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
+    # print(cart.get_item_count())
     
     
 main()
