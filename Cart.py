@@ -59,28 +59,24 @@ class Cart(Base):
     def add_item_price_to_total_price(self, item_price):
         self.total_price = self.total_price + item_price
 
-    def calculate_total_tax_price(self):
-        self.total_tax = self.total_price * self._avg_state_sales_tax
+    def calculate_total_with_tax(self):
+        self.total_tax = self.total_price + self.total_price * self._avg_state_sales_tax
 
-    def get_price(self, person_object):
-        return self.total_price
+    def print_price_without_tax(self):
+        print("Cart Total without Tax: ${:.2f}".format(self.total_price))
+
+    def print_price_with_tax(self):
+        self.calculate_total_with_tax()
+        print("Cart Total with Tax: ${:.2f}".format(self.total_tax))
 
     def print_cart(self, person_object):
         print("""********************\nItems in Cart:""")
         for i in self.session.query(Cart).filter(Cart.person_id == person_object.id).order_by(Cart.id):
             print("Item: {0} Price: {1} Customer ID: {2}".format(i.item, i.price, i.person_id))
         print("""********************\n""")
-
-
-class Checkout(Cart):
-    def __init__(self):
-        self.db_engine = create_engine('sqlite:///:memory:', echo=False)
-        Base.metadata.create_all(self.db_engine)
-        self.Session = sessionmaker(bind=self.db_engine)
-        self.session = self.Session()
-
+    
     def teardown(self):
-        self.session.close() # or remove()
+        self.session.close()
 
 
 if __name__ == '__main__':
@@ -100,7 +96,7 @@ if __name__ == '__main__':
         1
     )
     cart.print_cart(justin)
-    print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
+    cart.print_price_without_tax()
     cart.add_item_to_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], 
         justin,
@@ -108,5 +104,6 @@ if __name__ == '__main__':
         2
     )
     cart.print_cart(justin)
-    print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
+    cart.print_price_without_tax()
+    cart.print_price_with_tax()
     

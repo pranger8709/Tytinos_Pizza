@@ -60,7 +60,7 @@ def main():
         1
     )
     cart.print_cart(justin)
-    print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
+    cart.print_price_without_tax()
     cart.add_item_to_cart(
         menu[0].session.query(Menu).filter(Menu.itemType == 1).filter(Menu.active == 1).order_by(Menu.id)[2], 
         justin,
@@ -68,7 +68,8 @@ def main():
         1
     )
     cart.print_cart(justin)
-    print("Cart Total: ${:.2f}".format(cart.get_price(justin)))
+    cart.print_price_without_tax()
+    cart.print_price_with_tax()
     
     
 main()
