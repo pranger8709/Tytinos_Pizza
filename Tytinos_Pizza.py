@@ -111,6 +111,32 @@ def main():
     justin_cart.add_item_price_to_total_price(selected_delivery_type)
     justin_cart.print_cart(justin)
 
+    # Coupon Database ORM
+    coupon = Coupon()
+    coupon.add_standard_coupon_types()
+    coupon.print_coupon_table()
+
+    # Instantiate coupon objects using Strategy Design Pattern
+    new_user_coupon = NewUserCoupon()
+    weekly_special_coupon = WeeklySpecialCoupon()
+    refer_friend_coupon = ReferFriendCoupon()
+    print(new_user_coupon.get_discount_amount(coupon))
+    print(weekly_special_coupon.get_discount_amount(coupon))
+    print(refer_friend_coupon.get_discount_amount(coupon))
+
+    # Apply a coupon to a customer
+    print("\n\n*******************************************\nNo Discount:")
+    justin_cart.print_cart(justin)
+    coupon.print_coupon_table()
+    print("\n\n*******************************************\nDiscount Applied:")
+    new_user_coupon.apply_coupon_to_cart_for_person_id(coupon, justin_cart, justin)
+    coupon.print_coupon_table()
+    justin_cart.print_cart(justin)
+    print("*******************************************\n")
+
+    # Check if coupon has been applied
+    print("Did Justin apply New User coupon? {}".format(new_user_coupon.check_if_person_id_has_used_coupon(coupon, justin)))
+    print("Did Justin apply Refer Friend coupon? {}".format(refer_friend_coupon.check_if_person_id_has_used_coupon(coupon, justin)))
     
     
 main()

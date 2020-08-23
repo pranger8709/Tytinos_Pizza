@@ -31,12 +31,10 @@ class Cart(Base):
         self.quantity = quantity
         self.active = active
         self.total_price = 0.0
+        self.total_price_with_discounts = 0.0
         self.total_tax = 0.0
         self._avg_state_sales_tax = 0.0554
-
-    def add_data(self, coupon_type, coupon_discount):
-        self.session.add(Coupon(type=coupon_type, discount=coupon_discount))
-        self.session.commit()
+        self.discount = 0.0
 
     def add_item_to_cart(self, item_object, person_object, item_size, item_quantity):
         if(item_size == "Small"):
@@ -67,24 +65,32 @@ class Cart(Base):
         result_list = [p for (p,) in self.session.query(func.count(Cart.item)).filter(Cart.person_id == person_object.id).filter(Cart.item == search_item_name)]
         return result_list[0] == 1
 
+    def set_discount(self, discount):
+        self.discount = discount
+
     def add_item_price_to_total_price(self, item_price):
         self.total_price = self.total_price + item_price
 
     def remove_item_price_from_total_price(self, item_price):
         self.total_price = self.total_price - item_price
 
+    def calculate_total_without_tax(self):
+        self.total_price_with_discounts = self.total_price - (self.total_price * self.discount)
+
     def calculate_total_with_tax(self):
-        self.total_tax = self.total_price + self.total_price * self._avg_state_sales_tax
+        self.calculate_total_without_tax()
+        self.total_tax = self.total_price_with_discounts + (self.total_price * self._avg_state_sales_tax)
 
     def print_price_without_tax(self):
-        print("Cart Total without Tax: ${:.2f}".format(self.total_price))
+        self.calculate_total_without_tax()
+        print("Cart Total without Tax: ${:.2f}".format(self.total_price_with_discounts))
 
     def print_price_with_tax(self):
         self.calculate_total_with_tax()
         print("Cart Total with Tax: ${:.2f}".format(self.total_tax))
 
     def print_cart(self, person_object):
-        print("""********************\nItems in Cart:""")
+        print("""********************\n{}'s Cart\n\nItems in Cart:""".format(person_object.firstName))
         for i in self.session.query(Cart).filter(Cart.person_id == person_object.id).filter(Cart.active == 1).order_by(Cart.id):
             print("Item: {0} Price: {1} Customer ID: {2}".format(i.item, i.price, i.person_id))
         self.print_price_without_tax()
