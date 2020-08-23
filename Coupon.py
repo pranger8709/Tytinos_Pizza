@@ -13,6 +13,7 @@ class Coupon(Base):
     """ A class which uses the strategy design pattern to apply a coupon discount to total price before taxes.
         A database will be used because we must also track the person_id so that the same person cannot 
         just keep using the same coupon discount."""
+    # Coupon table
     __tablename__ = 'coupon'
     
     id = Column(Integer, primary_key=True)
@@ -22,32 +23,39 @@ class Coupon(Base):
     active = Column(Integer)
 
     def __init__(self, coupon_type=None, discount=None, person_id=None, active=1):
+        # Instantiate the Database Engine object
         self.db_engine = create_engine('sqlite:///:memory:', echo=False)
         Base.metadata.create_all(self.db_engine)
         self.Session = sessionmaker(bind=self.db_engine)
         self.session = self.Session()
+
+        # Additional Coupon attributes
         self.coupon_type = coupon_type
         self.discount = discount
         self.person_id = person_id
         self.active = active
 
     def add_standard_coupon_types(self):
+        """ Add a set of standard coupon types to the Coupon table. """
         self.session.add(Coupon(coupon_type="New User", discount=0.20, person_id=0))
         self.session.add(Coupon(coupon_type="Weekly Special", discount=0.15, person_id=0))
         self.session.add(Coupon(coupon_type="Refer Friend", discount=0.25, person_id=0))
         self.session.commit()
 
     def get_discount_amount_from_coupon_name(self, coupon_type_name):
+        """ Return the discount amount for a specified coupon name. """
         discount_amount = self.session.query(Coupon).filter(Coupon.coupon_type == coupon_type_name)
         return discount_amount[0].discount
     
     def apply_coupon_to_cart_for_person_id(self, coupon_type_name, discount_amount, cart_object, person_object):
+        """ Apply the coupon discount to a person's cart. Requires a Cart and Person object. """
         self.session.add(Coupon(coupon_type=coupon_type_name, discount=discount_amount, person_id=person_object.id))
         self.session.commit()
         cart_object.set_discount(discount_amount)
 
 
     def check_if_person_id_has_used_coupon(self, coupon_type_name, person_object):
+        """ Check it a person has already applied a coupon. This is useful in preventing a customer from using a coupon for each order. """
         result_list = [
             p for (p,) in self.session.query(func.count(Coupon.coupon_type))
             .filter(Coupon.coupon_type == coupon_type_name)

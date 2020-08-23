@@ -11,6 +11,7 @@ Base = declarative_base()
 
 class Delivery(Base):
     """ A delivery class to give the customer a choice between Delivery and store pickup. """
+    # Delivery table
     __tablename__ = 'delivery'
     
     id = Column(Integer, primary_key=True)
@@ -19,29 +20,37 @@ class Delivery(Base):
     active = Column(Integer)
 
     def __init__(self, delivery_type=None, delivery_price=None, active=1):
+        # Instantiate the Database Engine object
         self.db_engine = create_engine('sqlite:///:memory:', echo=False)
         Base.metadata.create_all(self.db_engine)
         self.Session = sessionmaker(bind=self.db_engine)
         self.session = self.Session()
+
+        # Additional Delivery attributes
         self.delivery_type = delivery_type
         self.delivery_price = delivery_price
         self.active = active
 
-    def get_delivery_price_from_deliver_type_name(self, delivery_type_name):
+    def get_delivery_price_from_delivery_type_name(self, delivery_type_name):
+        """ Returns the delivery price for a specified delivery type name. """
         delivery_type = self.session.query(Delivery).filter(Delivery.delivery_type == delivery_type_name)
         return delivery_type[0].delivery_price
 
     def add_delivery_type(self, delivery_type_name, delivery_price):
+        """ Add a new delivery type. """
         self.session.add(Delivery(delivery_type=delivery_type_name, delivery_price=delivery_price))
         self.session.commit()
 
     def add_standard_delivery_types(self):
+        """ Add a set of standard delivery types to the Delivery table. """
         self.session.add(Delivery(delivery_type="Delivery", delivery_price=3.99))
         self.session.add(Delivery(delivery_type="Pick up", delivery_price=0.00))
         self.session.add(Delivery(delivery_type="Door Dash", delivery_price=3.99))
         self.session.commit()
 
     def remove_delivery_type(self, delivery_type_name, delivery_type_price):
+        """ Remove an existing delivery type. """
+        # First check to see if the delivery type exists
         if(self.does_delivery_type_exist(delivery_type_name, delivery_type_price)):
             self.session.query(Delivery).filter(Delivery.delivery_type == delivery_type_name).filter(Delivery.delivery_price == delivery_type_price).update({Delivery.active: 0}, synchronize_session='evaluate')
             self.session.commit()
@@ -49,6 +58,7 @@ class Delivery(Base):
             print("Warning: That delivery type does not exist. No delivery type was removed.")
     
     def does_delivery_type_exist(self, delivery_type_name, delivery_type_price):
+        """ Check Delivery to see if that delivery type exists. """
         result_list = [
             p for (p,) in self.session.query(func.count(Delivery.delivery_type))
             .filter(Delivery.delivery_type == delivery_type_name)
