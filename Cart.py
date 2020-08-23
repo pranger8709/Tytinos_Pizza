@@ -10,7 +10,10 @@ Base = declarative_base()
 
 
 class Cart(Base):
-    """ A cart class to keep track of a customer's items and the item's associated price. """
+    """ A cart class to keep track of a customer's items and the item's associated price.
+        This class will use information from the Person ORM to associate a cart to a person.
+        It will also use the Menu ORM to read which items can be added to the cart ORM."""
+    # Cart table
     __tablename__ = 'cart'
     
     id = Column(Integer, primary_key=True)
@@ -21,10 +24,13 @@ class Cart(Base):
     active = Column(Integer)
 
     def __init__(self, item=None, price=None, person_id=None, quantity=None, active=1):
+        # Instantiate the Database Engine object
         self.db_engine = create_engine('sqlite:///:memory:', echo=False)
         Base.metadata.create_all(self.db_engine)
         self.Session = sessionmaker(bind=self.db_engine)
         self.session = self.Session()
+
+        # Additional Cart attributes
         self.item = item
         self.price = price
         self.person_id = person_id
@@ -37,6 +43,7 @@ class Cart(Base):
         self.discount = 0.0
 
     def add_item_to_cart(self, item_object, person_object, item_size, item_quantity):
+        """ Add an Item to a person's cart. Item Size is needed to associate the right item size. """
         if(item_size == "Small"):
             for i in range(item_quantity):
                 self.session.add(Cart(item=item_object.name, price=item_object.priceOne, person_id=person_object.id, quantity=item_quantity))
@@ -54,6 +61,7 @@ class Cart(Base):
                 self.add_item_price_to_total_price(item_object.priceThree)
 
     def remove_item_from_cart(self, item_object, person_object, search_item_name, search_item_price):
+        """ Revmoe an item from a person's cart. """
         if(self.is_item_in_cart_for_person(item_object, person_object, search_item_name, search_item_price)):
             self.session.query(Cart).filter(Cart.person_id == person_object.id).filter(Cart.item == item_object.name).update({Cart.active: 0}, synchronize_session='evaluate')
             self.session.commit()
@@ -62,6 +70,7 @@ class Cart(Base):
             print("Warning: That item does not exist in {}'s cart. No item was removed.".format(person_object.firstName))
 
     def is_item_in_cart_for_person(self, item_object, person_object, search_item_name, search_item_price):
+        """ Check to see if an item exists in a person's cart. Good check before attempting to delete that item from the person's cart. """
         result_list = [p for (p,) in self.session.query(func.count(Cart.item)).filter(Cart.person_id == person_object.id).filter(Cart.item == search_item_name)]
         return result_list[0] == 1
 
