@@ -50,7 +50,7 @@ class Menu(Base):
         
 class Pizza(Menu):
     def __init__(self):
-        engine = create_engine('sqlite:///memory:', echo = False)
+        engine = create_engine('sqlite:///:memory:', echo = False)
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
@@ -81,7 +81,7 @@ class Pizza(Menu):
             
 class Side(Menu):
     def __init__(self):
-        engine = create_engine('sqlite:///memory:', echo = False)
+        engine = create_engine('sqlite:///:memory:', echo = False)
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
@@ -111,7 +111,7 @@ class Side(Menu):
 
 class Dessert(Menu):
     def __init__(self):
-        engine = create_engine('sqlite:///memory:', echo = False)
+        engine = create_engine('sqlite:///:memory:', echo = False)
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
@@ -139,7 +139,7 @@ class Dessert(Menu):
             print("{0}: {1} Price: ${2:.2f}".format(k, i.name, i.priceOne))
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///memory:', echo = False)
+    engine = create_engine('sqlite:///:memory:', echo = False)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()

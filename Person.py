@@ -38,7 +38,7 @@ class Person(Base):
 
 class Customer(Person):
     def __init__(self):
-        engine = create_engine('sqlite:///memory:', echo = False)
+        engine = create_engine('sqlite:///:memory:', echo = False)
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
@@ -63,7 +63,7 @@ class Customer(Person):
 
 class Employee(Person):
     def __init__(self):
-        engine = create_engine('sqlite:///memory:', echo=False)
+        engine = create_engine('sqlite:///:memory:', echo=False)
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
         self.session = Session()
